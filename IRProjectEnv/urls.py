@@ -16,8 +16,13 @@ Including another URLconf
 from django.conf.urls import include, url
 from django.contrib import admin
 
+from irproject import views
+
 
 urlpatterns = [
     url(r'^admin/', admin.site.urls),
-    url(r'^$', include('irproject.urls')),
+    url(r'^$', views.login, name='Login'),
+    url(r'^signup/$', views.signup, name='Sign Up'),
+    url(r'^logout/$', views.logout, name='Sign Up'),
+    #url(r'^$', include('irproject.urls'), name="ir"),
 ]
