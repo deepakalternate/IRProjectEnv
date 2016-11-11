@@ -3,7 +3,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from .models import Users, FriendStatus, FriendValue, Queries, QueriesReceived, Answers
-from .forms import SignUpForm, LoginForm, QueryForm, IntimacyForm, TopicForm, AnswerForm
+from .forms import SignUpForm, LoginForm, QueryForm, IntimacyForm, TopicForm, AnswerForm, RatingForm
 
 
 import os
@@ -453,5 +453,40 @@ def queries(request, id):
 
     return render(request, "query.html", context)
 
+
+def answers(request, id):
+
+    if not request.session.has_key('username'):
+        return HttpResponseRedirect('/')
+
+    username = request.session['username']
+
+    form = RatingForm(request.POST or None)
+
+    AnswerObjects = Answers.objects.filter(a_id=id)
+
+    for ao in AnswerObjects:
+        answer = ao
+
+    a_text = readFromPickle(ANS_DIR, answer.a_filename)
+    q_text = readFromPickle(QUERY_DIR, answer.query.q_filename)
+
+    context = {
+        'username': username,
+        'query': q_text,
+        'answer': a_text,
+        'form': form,
+        'answered_by': answer.answered_by.username,
+        'asked_by': answer.query.asked_by.username,
+    }
+
+    if form.is_valid():
+        rating = form.cleaned_data.get('rating')
+
+        # Scooby will fuck around with this code
+
+        HttpResponseRedirect('/answer/' + str(answer.q_id))
+
+    return render(request, "answer.html", context)
 
 # --> VIEWS END <--

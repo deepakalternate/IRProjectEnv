@@ -102,3 +102,9 @@ class AnswerForm(forms.Form):
 
 class RatingForm(forms.Form):
     rating = forms.IntegerField(widget=forms.TextInput(attrs={'placeholder': 'Rate Answer [1-10]'}))
+
+    def clean(self):
+        rating = self.cleaned_data['rating']
+
+        if rating > 10:
+            raise forms.ValidationError("Entered rating should be between 1 and 10.")
