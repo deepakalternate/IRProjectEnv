@@ -256,6 +256,7 @@ def receivedqueries(request):
     context = {
         'username': username,
         'queryset': queryset,
+        'key': 'received',
     }
 
     return render(request, "questionsbase.html", context)
@@ -285,6 +286,7 @@ def askedqueries(request):
     context = {
         'username': username,
         'query_set': query_set,
+        'key': 'asked',
     }
 
     return render(request, "questionsbase.html", context)

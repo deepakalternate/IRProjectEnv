@@ -83,3 +83,8 @@ class IntimacyForm(forms.Form):
             raise forms.ValidationError("Enter a value between 1 and 10.")
 
         return self.cleaned_data
+
+
+class TopicForm(forms.Form):
+    topic = forms.CharField()
+    expval = forms.IntegerField()

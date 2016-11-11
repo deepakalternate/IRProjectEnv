@@ -42,7 +42,6 @@
 
 				<!-- Main -->
 					<div id="main">
-
 						<!-- One -->
 							<section id="one">
 								<div class="container">
@@ -77,7 +76,9 @@
                                             </table>
                                         </div>
                                     {% else %}
-                                        <p>You haven't received any questions yet. Try adding more topics.</p>
+                                        {% if key == 'received' %}
+                                            <p>You haven't received any questions yet. Try adding more topics.</p>
+                                        {% endif %}
                                     {% endif %}
 
                                     {% if query_set %}
@@ -98,7 +99,9 @@
                                             </table>
                                         </div>
                                     {% else %}
-                                        <p>You haven't asked any questions yet.</p>
+                                        {% if key == 'asked' %}
+                                            <p>You haven't asked any questions yet.</p>
+                                        {% endif %}
                                     {% endif %}
 									
 								</div>
