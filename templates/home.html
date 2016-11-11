@@ -24,7 +24,7 @@
 				</header>
 				<nav id="nav">
 					<ul>
-						<li><a href="{% url "Home" %}">Home</a></li>
+                        <li><a href="{% url "Home" %}">Home</a></li>
 						<li><a href="{% url "Friend Requests" %}">Friend Requests</a></li>
 						<li><a href="{% url "Received Queries" %}">Questions Received</a></li>
 						<li><a href="{% url "Asked Queries" %}">Questions Asked</a></li>
@@ -47,9 +47,26 @@
 							<section id="one">
 								<div class="container">
 									<header class="major">
-										<h2>Read Only</h2>
+										<h2>Welcome {{ username }}!</h2>
+                                        <p>Have any questions? Ask away.</p>
 									</header>
-									
+
+                                    <p>{{ form.non_field_errors }}</p>
+									<form method="post" action="#">
+                                        {% csrf_token %}
+										<div class="row uniform">
+                                            <div class="12u">{{ form.query }}</div>
+										</div>
+										<div class="row uniform">
+											<div class="12u">
+												<ul class="actions">
+													<li><input type="submit" class="special" value="Ask" /></li>
+													<li><input type="reset" value="Reset" /></li>
+												</ul>
+											</div>
+										</div>
+									</form>
+
 								</div>
 							</section>
 

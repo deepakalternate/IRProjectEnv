@@ -1,9 +1,9 @@
 # --> IMPORTS BEGIN <--
 
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
-from .models import Users, FriendStatus
-from .forms import SignUpForm, LoginForm
+from django.http import HttpResponseRedirect
+from .models import Users, FriendStatus, FriendValue
+from .forms import SignUpForm, LoginForm, QueryForm, IntimacyForm
 
 
 import os
@@ -109,6 +109,15 @@ def readFromPickle(path, filename):
     with open(path+filename+'.pkl', 'rb') as readfile:
         return pickle.load(readfile)
 
+def getUserObject(user_id):
+
+    userset = Users.objects.filter(username=user_id)
+
+    for user in userset:
+        userneeded = user
+
+    return userneeded
+
 # --> USEFUL FUNCTIONS END <--
 
 # --> VIEWS START <--
@@ -118,25 +127,25 @@ def readFromPickle(path, filename):
 def signup(request):
 
     if request.session.has_key('username'):
-        pass
+        return HttpResponseRedirect('/home')
 
     form = SignUpForm(request.POST or None)
 
     if form.is_valid():
-        username = form.cleaned_data('username')
-        password = form.cleaned_data('password1')
+        username = form.cleaned_data.get('username')
+        password = form.cleaned_data.get('password1')
 
         user = Users(username=username, password=password)
         user.save()
 
         request.session['username'] = username
 
-        interest1 = form.cleaned_data('interest1')
-        interval1 = form.cleaned_data('interval1')
-        interest2 = form.cleaned_data('interest2')
-        interval2 = form.cleaned_data('interval2')
-        interest3 = form.cleaned_data('interest3')
-        interval3 = form.cleaned_data('interval3')
+        interest1 = form.cleaned_data.get('interest1')
+        interval1 = form.cleaned_data.get('interval1')
+        interest2 = form.cleaned_data.get('interest2')
+        interval2 = form.cleaned_data.get('interval2')
+        interest3 = form.cleaned_data.get('interest3')
+        interval3 = form.cleaned_data.get('interval3')
 
         with open(USER_DIR+username+'.csv', 'wb') as userfile:
             userwriter = csv.writer(userfile, delimiter=',')
@@ -144,7 +153,7 @@ def signup(request):
             userwriter.writerow([interest2, interval2])
             userwriter.writerow([interest3, interval3])
 
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/home')
 
     context = {
         "form": form,
@@ -156,15 +165,15 @@ def signup(request):
 def login(request):
 
     if request.session.has_key('username'):
-        pass
+        return HttpResponseRedirect('/home')
 
     form = LoginForm(request.POST or None)
 
     if form.is_valid():
-        username = form.cleaned_data['username']
+        username = form.cleaned_data.get('username')
         request.session['username'] = username
 
-        return HttpResponseRedirect('/')
+        return HttpResponseRedirect('/home')
 
     context = {
         "form": form,
@@ -180,5 +189,150 @@ def logout(request):
     except:
         pass
     return HttpResponseRedirect('/')
+
+
+# HOME
+def home(request):
+
+    if not request.session.has_key('username'):
+        return HttpResponseRedirect('/')
+
+    username = request.session['username']
+
+    form = QueryForm(request.POST or None)
+
+    context = {
+        'username': username,
+        'form': form,
+    }
+    return render(request, "home.html", context)
+
+
+# FRIEND REQUESTS
+def friendrequests(request):
+    if not request.session.has_key('username'):
+        return HttpResponseRedirect('/')
+
+    username = request.session['username']
+
+    allfriendrequests = getPendingRequests(username)
+
+    allremainingusers = getRemainingUsers(username)
+
+    context = {
+        'username': username,
+        'friend_requests': allfriendrequests,
+        'remaining_users': allremainingusers,
+
+    }
+    return render(request, "friendrequests.html", context)
+
+
+# RECEIVED QUERIES
+def receivedqueries(request):
+
+    if not request.session.has_key('username'):
+        return HttpResponseRedirect('/')
+
+    username = request.session['username']
+
+    context = {
+        'username': username,
+    }
+
+    return render(request, "", context)
+
+
+# ASKED QUERIES
+def askedqueries(request):
+    if not request.session.has_key('username'):
+        return HttpResponseRedirect('/')
+
+    username = request.session['username']
+
+    context = {
+        'username': username,
+    }
+
+    return render(request, "", context)
+
+
+# ADD TOPICS OF INTEREST
+def addtopics(request):
+    if not request.session.has_key('username'):
+        return HttpResponseRedirect('/')
+
+    username = request.session['username']
+
+    context = {
+        'username': username,
+    }
+
+    return render(request, "", context)
+
+
+# ACCEPT FRIEND
+def acceptfriend(request, sender):
+    if not request.session.has_key('username'):
+        return HttpResponseRedirect('/')
+
+    username = request.session['username']
+
+    form = IntimacyForm(request.POST or None)
+
+    context = {
+        'username': username,
+        'form': form,
+        'sender': sender,
+        'buttontext': 'Accept Request',
+    }
+
+    if form.is_valid():
+        intimacy = form.cleaned_data.get('intimacy')
+
+        friend_group = FriendStatus.objects.filter(req_receiver=username, req_sender=sender)
+
+        for fg in friend_group:
+            friendship = fg
+
+        friendship.status = 'ACCEPTED'
+        friendship.save()
+
+        friendval = FriendValue(friendship_no=friendship, value_by_user=getUserObject(username), value=intimacy)
+        friendval.save()
+
+        return HttpResponseRedirect('/friendrequests')
+
+    return render(request, "basefriend.html", context)
+
+
+# ADD FRIEND
+def addfriend(request, receiver):
+    if not request.session.has_key('username'):
+        return HttpResponseRedirect('/')
+
+    username = request.session['username']
+
+    form = IntimacyForm(request.POST or None)
+
+    context = {
+        'username': username,
+        'form': form,
+        'receiver': receiver,
+        'buttontext': 'Send Request',
+    }
+
+    if form.is_valid():
+        intimacy = form.cleaned_data.get('intimacy')
+
+        friendship = FriendStatus(req_receiver=receiver, req_sender=username, status="PENDING")
+        friendship.save()
+
+        friendvalue = FriendValue(friendship_no=friendship, value_by_user=getAllUsers(username), value=intimacy )
+        friendvalue.save()
+
+        return HttpResponseRedirect('/friendrequests')
+
+    return render(request, "basefriend.html", context)
 
 # --> VIEWS END <--

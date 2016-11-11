@@ -39,27 +39,44 @@
 							<section id="one">
 								<div class="container">
                                     <header class="major">
-                                        <h2>Login</h2>
+                                        <h2>Sign Up</h2>
                                     </header>
                                     <p>{{ form.non_field_errors }}</p>
+                                    <p>{{ form.interval1.errors }}</p>
+                                    <p>{{ form.interval2.errors }}</p>
+                                    <p>{{ form.interval3.errors }}</p>
 									<form method="post" action="#">
                                         {% csrf_token %}
 										<div class="row uniform">
                                             <div class="6u 12u(xsmall)">{{ form.username }}</div>
 										</div>
                                         <div class="row uniform">
-                                            <div class="6u 12u(xsmall)">{{ form.password }}</div>
+                                            <div class="6u 12u(xsmall)">{{ form.password1 }}</div>
+										</div>
+                                        <div class="row uniform">
+                                            <div class="6u 12u(xsmall)">{{ form.password2 }}</div>
+										</div>
+                                        <div class="row uniform">
+                                            <div class="6u 12u(xsmall)">{{ form.interest1 }}</div>
+                                            <div class="6u 12u(xsmall)">{{ form.interval1 }}</div>
+										</div>
+                                        <div class="row uniform">
+                                            <div class="6u 12u(xsmall)">{{ form.interest2 }}</div>
+                                            <div class="6u 12u(xsmall)">{{ form.interval2 }}</div>
+										</div>
+                                        <div class="row uniform">
+                                            <div class="6u 12u(xsmall)">{{ form.interest3 }}</div>
+                                            <div class="6u 12u(xsmall)">{{ form.interval3 }}</div>
 										</div>
 										<div class="row uniform">
 											<div class="12u">
 												<ul class="actions">
-													<li><input type="submit" class="special" value="Login" /></li>
+													<li><input type="submit" class="special" value="Sign Up" /></li>
 													<li><input type="reset" value="Reset" /></li>
 												</ul>
 											</div>
 										</div>
 									</form>
-                                    <p><a href="{% url "Sign Up" %}">Don't have an account? Sign up now.</a></p>
 								</div>
 							</section>
 

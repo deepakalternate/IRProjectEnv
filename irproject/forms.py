@@ -5,15 +5,15 @@ from .models import Users
 # --> SIGN UP FORM <--
 
 class SignUpForm(forms.Form):
-    username = forms.CharField(label='Username')
-    password1 = forms.CharField(label='Password', widget=forms.PasswordInput)
-    password2 = forms.CharField(label='Re-enter Password', widget=forms.PasswordInput)
-    interest1 = forms.CharField(label='Interest 1')
-    interval1 = forms.IntegerField(label='Rate interest on the scale of 1-10')
-    interest2 = forms.CharField(label='Interest 2')
-    interval2 = forms.IntegerField(label='Rate interest on the scale of 1-10')
-    interest3 = forms.CharField(label='Interest 3')
-    interval3 = forms.IntegerField(label='Rate interest on the scale of 1-10')
+    username = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Username'}))
+    password1 = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Password', 'type': 'password'}))
+    password2 = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Re-enter Password', 'type': 'password'}))
+    interest1 = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Interest 1'}))
+    interval1 = forms.IntegerField(widget=forms.TextInput(attrs={'placeholder': 'Rate Interest [1-10]'}))
+    interest2 = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Interest 2'}))
+    interval2 = forms.IntegerField(widget=forms.TextInput(attrs={'placeholder': 'Rate Interest [1-10]'}))
+    interest3 = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Interest 3'}))
+    interval3 = forms.IntegerField(widget=forms.TextInput(attrs={'placeholder': 'Rate Interest [1-10]'}))
 
     def clean(self):
 
@@ -25,7 +25,7 @@ class SignUpForm(forms.Form):
         interval2 = self.cleaned_data['interval2']
         interval3 = self.cleaned_data['interval3']
 
-        querieddata = Users.objects.get(username=username)
+        querieddata = Users.objects.filter(username=username)
 
         if querieddata:
             raise forms.ValidationError("Username already in use.")
@@ -62,5 +62,24 @@ class LoginForm(forms.Form):
 
         if password != un.password:
             raise forms.ValidationError("Incorrect Password")
+
+        return self.cleaned_data
+
+
+class QueryForm(forms.Form):
+    query = forms.CharField()
+
+    def clean(self):
+        return self.cleaned_data
+
+
+class IntimacyForm(forms.Form):
+    intimacy = forms.IntegerField(widget=forms.TextInput(attrs={'placeholder': 'Rate Intimacy [1-10]'}))
+
+    def clean(self):
+        intimacy = self.cleaned_data['intimacy']
+
+        if intimacy > 10:
+            raise forms.ValidationError("Enter a value between 1 and 10.")
 
         return self.cleaned_data

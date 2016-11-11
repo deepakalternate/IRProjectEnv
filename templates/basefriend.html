@@ -47,8 +47,29 @@
 							<section id="one">
 								<div class="container">
 									<header class="major">
-										<h2>Read Only</h2>
+										{% if sender %}
+                                            <h2>Accept {{ sender }}'s friend request?</h2>
+                                        {% endif %}
+
+                                        {% if receiver %}
+                                            <h2>Send {{ receiver }} a friend request?</h2>
+                                        {% endif %}
 									</header>
+
+                                <p>{{ form.non_field_errors }}</p>
+                                <form method="post" action="#">
+                                    {% csrf_token %}
+                                    <div class="row uniform">
+                                        <div class="12u">{{ form.intimacy }}</div>
+                                    </div>
+                                    <div class="row uniform">
+                                        <div class="12u">
+                                            <ul class="actions">
+                                                <li><input type="submit" class="special" value="{{ buttontext }}" /></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </form>
 									
 								</div>
 							</section>
