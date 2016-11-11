@@ -69,7 +69,7 @@
                                                     {% for query in queryset %}
                                                     <tr>
                                                         <td>{{ query.1 }}</td>
-                                                        <td style="width:75%"><a href='/query/{{ query.0 }}'></a>{{ query.2 }}</td>
+                                                        <td style="width:75%"><a href='/query/{{ query.0 }}'>{{ query.2 }}</a></td>
                                                     </tr>
                                                     {% endfor %}
                                                 </tbody>
@@ -92,7 +92,7 @@
                                                 <tbody>
                                                     {% for query in query_set %}
                                                     <tr>
-                                                        <td><a href='/query/{{ query.0 }}'></a>{{ query.1 }}</td>
+                                                        <td><a href='/query/{{ query.0 }}'>{{ query.1 }}</a></td>
                                                     </tr>
                                                     {% endfor %}
                                                 </tbody>
