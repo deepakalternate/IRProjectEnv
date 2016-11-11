@@ -18,7 +18,7 @@ class FriendStatus(models.Model):
     status = models.CharField(max_length=50)
 
     def __unicode__(self):
-        return self.f_id
+        return str(self.f_id)
 
 
 class Queries(models.Model):
@@ -27,7 +27,7 @@ class Queries(models.Model):
     asked_by = models.ForeignKey(Users)
 
     def __unicode__(self):
-        return self.q_id
+        return str(self.q_id)
 
 
 class Answers(models.Model):

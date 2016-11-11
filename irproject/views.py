@@ -16,10 +16,10 @@ import time
 # --> FILE PATHS  START<--
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DUMP_DIR = os.path.join(BASE_DIR, "dump")
-QUERY_DIR = os.path.join(DUMP_DIR, "queries")
-ANS_DIR = os.path.join(DUMP_DIR, "answers")
-USER_DIR = os.path.join(DUMP_DIR, "userinterests")
+DUMP_DIR = os.path.join(BASE_DIR, os.sep, "dump")
+QUERY_DIR = os.path.join(DUMP_DIR, os.sep, "queries")
+ANS_DIR = os.path.join(DUMP_DIR, os.sep, "answers")
+USER_DIR = os.path.join(DUMP_DIR, os.sep, "userinterests")
 
 # --> FILE PATHS END <--
 
@@ -102,12 +102,16 @@ def getRemainingUsers(user_id):
 
 
 def writeToPickle(path, filename, data):
-    with open(path+filename+'.pkl', 'wb') as writefile:
+    filename = filename+'.pkl'
+    abspath = os.path.join(path, os.sep, filename)
+    with open(abspath, 'wb') as writefile:
         pickle.dump(data, writefile, pickle.HIGHEST_PROTOCOL)
 
 
 def readFromPickle(path, filename):
-    with open(path+filename+'.pkl', 'rb') as readfile:
+    filename = filename+'.pkl'
+    abspath = os.path.join(path, os.sep, filename)
+    with open(abspath, 'rb') as readfile:
         return pickle.load(readfile)
 
 
@@ -149,7 +153,9 @@ def signup(request):
         interest3 = form.cleaned_data.get('interest3')
         interval3 = form.cleaned_data.get('interval3')
 
-        with open(USER_DIR+username+'.csv', 'wb') as userfile:
+        filename = username+'.csv'
+        abspath = os.path.join(USER_DIR, os.sep, filename)
+        with open(abspath, 'wb') as userfile:
             userwriter = csv.writer(userfile, delimiter=',')
             userwriter.writerow([interest1, interval1])
             userwriter.writerow([interest2, interval2])
@@ -324,7 +330,10 @@ def addtopics(request):
         newinterest = form.cleaned_data.get('topic')
         newval = form.cleaned_data.get('expval')
 
-        with open(USER_DIR+username+'.csv', 'a') as csvfile:
+        filename = username + '.csv'
+        abspath = os.path.join(USER_DIR, os.sep, filename)
+
+        with open(abspath, 'a') as csvfile:
             csvw = csv.writer(csvfile, delimiter=',')
             csvw.writerow([newinterest, newval])
 
