@@ -32,5 +32,5 @@ urlpatterns = [
     url(r'^addfriend/(?P<receiver>[a-zA-Z0-9]+)/$', views.addfriend, name='Add Friend'),
     url(r'^acceptfriend/(?P<sender>[a-zA-Z0-9]+)/$', views.acceptfriend, name='Accept Friend'),
     url(r'^query/(?P<id>\d+)/$', views.queries, name='Queries'),
-    #url(r'^$', include('irproject.urls'), name="ir"),
+    url(r'^answer/(?P<id>\d+)/$', views.answers, name='Answers'),
 ]

@@ -86,5 +86,19 @@ class IntimacyForm(forms.Form):
 
 
 class TopicForm(forms.Form):
-    topic = forms.CharField()
-    expval = forms.IntegerField()
+    topic = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Add New Interest'}))
+    expval = forms.IntegerField(widget=forms.TextInput(attrs={'placeholder': 'Rate Interest [1-10]'}))
+
+    def clean(self):
+        expval = self.cleaned_data['expval']
+
+        if expval > 10:
+            raise forms.ValidationError("Entered interest values should be between 1 and 10.")
+
+
+class AnswerForm(forms.Form):
+    answer = forms.CharField(widget=forms.TextInput(attrs={'placeholder': 'Submit an answer.'}))
+
+
+class RatingForm(forms.Form):
+    rating = forms.IntegerField(widget=forms.TextInput(attrs={'placeholder': 'Rate Answer [1-10]'}))

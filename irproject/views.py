@@ -2,13 +2,14 @@
 
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from .models import Users, FriendStatus, FriendValue, Queries, QueriesReceived
-from .forms import SignUpForm, LoginForm, QueryForm, IntimacyForm
+from .models import Users, FriendStatus, FriendValue, Queries, QueriesReceived, Answers
+from .forms import SignUpForm, LoginForm, QueryForm, IntimacyForm, TopicForm, AnswerForm
 
 
 import os
 import pickle
 import csv
+import time
 
 # --> IMPORTS END <--
 
@@ -206,6 +207,19 @@ def home(request):
         'username': username,
         'form': form,
     }
+
+    if form.is_valid():
+        query_text = form.cleaned_data.get('query')
+
+        filename = username+'$'+str(int(time.time()))
+
+        writeToPickle(QUERY_DIR, filename, query_text)
+
+        queryobj = Queries(q_filename=filename, asked_by=getUserObject(username))
+        queryobj.save()
+
+        HttpResponseRedirect('/query/'+str(queryobj.q_id))
+
     return render(request, "home.html", context)
 
 
@@ -299,11 +313,24 @@ def addtopics(request):
 
     username = request.session['username']
 
+    form = TopicForm(request.POST or None)
+
     context = {
         'username': username,
+        'form': form,
     }
 
-    return render(request, "", context)
+    if form.is_valid():
+        newinterest = form.cleaned_data.get('topic')
+        newval = form.cleaned_data.get('expval')
+
+        with open(USER_DIR+username+'.csv', 'a') as csvfile:
+            csvw = csv.writer(csvfile, delimiter=',')
+            csvw.writerow([newinterest, newval])
+
+        return HttpResponseRedirect('/')
+
+    return render(request, "addtopic.html", context)
 
 
 # ACCEPT FRIEND
@@ -371,6 +398,7 @@ def addfriend(request, receiver):
     return render(request, "basefriend.html", context)
 
 
+# DISPLAY QUERY
 def queries(request, id):
 
     if not request.session.has_key('username'):
@@ -378,11 +406,52 @@ def queries(request, id):
 
     username = request.session['username']
 
+    form = AnswerForm(request.POST or None)
+
+    QueryObjects = Queries.objects.filter(q_id=id)
+
+    for ob in QueryObjects:
+        query = ob
+
+    q_text = readFromPickle(QUERY_DIR, query.q_filename)
+
+    AnswerObjects = Answers.objects.filter(query=query)
+
+    answer_set = []
+
+    for ao in AnswerObjects:
+
+        answer = []
+
+        a_text = readFromPickle(ANS_DIR, ao.a_filename)
+
+        answer.append(ao.a_id)
+        answer.append(ao.answered_by.username)
+        answer.append(a_text)
+
+        answer_set.append(answer)
+
     context = {
-        'username': username
+        'username': username,
+        'query': q_text,
+        'form': form,
+        'answer_set': answer_set,
+        'asked_by': query.asked_by.username,
     }
 
-    return render(request, "base.html", context)
+    if form.is_valid():
+        answer_text = form.cleaned_data.get('answer')
+
+        filename = username + '$' + str(int(time.time()))
+
+        writeToPickle(ANS_DIR, filename, answer_text)
+
+        answerobj = Answers(a_filename=filename, answered_by=getUserObject(username), query=query)
+        answerobj.save()
+
+        HttpResponseRedirect('/query/' + str(query.q_id))
+
+    return render(request, "query.html", context)
 
 
 # --> VIEWS END <--

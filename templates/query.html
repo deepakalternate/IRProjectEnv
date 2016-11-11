@@ -1,0 +1,118 @@
+<!DOCTYPE HTML>
+<!--
+	Read Only by HTML5 UP
+	html5up.net | @ajlkn
+	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
+-->
+<html xmlns="http://www.w3.org/1999/html">
+	<head>
+		<title>Social Search Engine</title>
+        {% load static %}
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<!--[if lte IE 8]><script src="{% static "assets/js/ie/html5shiv.js" %}"></script><![endif]-->
+		<link rel="stylesheet" href="{% static "assets/css/main.css" %}"/>
+		<!--[if lte IE 8]><link rel="stylesheet" href="{% static "assets/css/ie8.css" %} /><![endif]-->
+	</head>
+	<body>
+
+		<!-- Header -->
+			<section id="header">
+				<header>
+					<span class="image avatar"><img src="{% static "images/avatar.jpg" %}" alt="" /></span>
+					<h1 id="logo"><a href="#">{{ username }}</a></h1>
+				</header>
+				<nav id="nav">
+					<ul>
+						<li><a href="{% url "Home" %}">Home</a></li>
+						<li><a href="{% url "Friend Requests" %}">Friend Requests</a></li>
+						<li><a href="{% url "Received Queries" %}">Questions Received</a></li>
+						<li><a href="{% url "Asked Queries" %}">Questions Asked</a></li>
+                        <li><a href="{% url "Add Topics" %}">Add Topics</a></li>
+						<li><a href="{% url "Logout" %}">Logout</a></li>
+					</ul>
+				</nav>
+				<footer>
+                    <p>Social Search Engine</p>
+				</footer>
+			</section>
+
+		<!-- Wrapper -->
+			<div id="wrapper">
+
+				<!-- Main -->
+					<div id="main">
+
+						<!-- One -->
+							<section id="one">
+								<div class="container">
+									<header class="major">
+										<h2>Question:</h2>
+                                        <h4>{{ query }}</h4>
+                                        <p>Asked by: {{ asked_by }}</p>
+									</header>
+
+                                    {% if asked_by != username %}
+                                    <p>{{ form.non_field_errors }}</p>
+									<form method="post" action="#">
+                                        {% csrf_token %}
+										<div class="row uniform">
+                                            <div class="12u">{{ form.answer }}</div>
+										</div>
+										<div class="row uniform">
+											<div class="12u">
+												<ul class="actions">
+													<li><input type="submit" class="special" value="Ask" /></li>
+													<li><input type="reset" value="Reset" /></li>
+												</ul>
+											</div>
+										</div>
+									</form>
+                                    {% endif %}
+									
+								</div>
+							</section>
+
+                            <section id="two">
+								<div class="container">
+
+                                <header class="major">
+										<h2>Answers:</h2>
+                                </header>
+
+                                {% if answer_set %}
+                                    {% for answer in answer_set %}
+                                        <h4>{{ answer.1 }}</h4>
+                                        <a href="/answer/{{ answer.0 }}"><p>{{ answer.2 }}</p></a>
+                                    {% endfor %}
+                                {% else %}
+                                    <p>No answers yet.</p>
+                                {% endif %}
+								</div>
+							</section>
+
+
+
+					</div>
+
+				<!-- Footer -->
+					<section id="footer">
+						<div class="container">
+							<ul class="copyright">
+								<li>&copy; IR Project. All rights reserved.</li><li>Design: The Creators</li>
+							</ul>
+						</div>
+					</section>
+
+			</div>
+
+		<!-- Scripts -->
+			<script src="{% static "assets/js/jquery.min.js" %}"></script>
+			<script src="{% static "assets/js/jquery.scrollzer.min.js" %}"></script>
+			<script src="{% static "assets/js/jquery.scrolly.min.js" %}"></script>
+			<script src="{% static "assets/js/skel.min.js" %}"></script>
+			<script src="{% static "assets/js/util.js" %}"></script>
+			<!--[if lte IE 8]><script src="{% static "assets/js/ie/respond.min.js" %}"></script><![endif]-->
+			<script src="{% static "assets/js/main.js" %}"></script>
+	</body>
+</html>
