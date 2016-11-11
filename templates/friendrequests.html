@@ -63,7 +63,7 @@
                                         {% for request in friend_requests %}
                                         <tr>
                                             <td style="width:75%">{{ request }}</td>
-                                            <td><a href='/acceptfriend/{{ request }} -->'><input type = 'submit' class="button special small" value = 'Accept' /></a></td>
+                                            <td><a href='/acceptfriend/{{ request }}'><input type = 'submit' class="button special small" value = 'Accept' /></a></td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
@@ -93,7 +93,7 @@
                                         {% for makefriend in remaining_users %}
                                         <tr>
                                             <td style="width:75%">{{ makefriend }}</td>
-                                            <td><a href='/addfriend/{{ makefriend }} -->'><input type = 'submit' class="button special small" value = 'Send Request' /></a></td>
+                                            <td><a href='/addfriend/{{ makefriend }}'><input type = 'submit' class="button special small" value = 'Send Request' /></a></td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>

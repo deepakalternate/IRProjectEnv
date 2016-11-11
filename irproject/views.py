@@ -2,7 +2,7 @@
 
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
-from .models import Users, FriendStatus, FriendValue
+from .models import Users, FriendStatus, FriendValue, Queries, QueriesReceived
 from .forms import SignUpForm, LoginForm, QueryForm, IntimacyForm
 
 
@@ -108,6 +108,7 @@ def writeToPickle(path, filename, data):
 def readFromPickle(path, filename):
     with open(path+filename+'.pkl', 'rb') as readfile:
         return pickle.load(readfile)
+
 
 def getUserObject(user_id):
 
@@ -236,11 +237,28 @@ def receivedqueries(request):
 
     username = request.session['username']
 
+    received_set = QueriesReceived.objects.filter(asked_to=username)
+
+    queryset = []
+
+    for rs in received_set:
+
+        query = []
+        qstring = readFromPickle(QUERY_DIR, rs.question_asked.q_filename)
+        qstring = qstring[:30] + '...'
+
+        query.append(rs.question_asked.q_id)
+        query.append(rs.question_asked.asked_by.username)
+        query.append(qstring)
+
+        queryset.append(query)
+
     context = {
         'username': username,
+        'queryset': queryset,
     }
 
-    return render(request, "", context)
+    return render(request, "questionsbase.html", context)
 
 
 # ASKED QUERIES
@@ -250,11 +268,26 @@ def askedqueries(request):
 
     username = request.session['username']
 
+    asked_set = Queries.objects.filter(asked_by=username)
+
+    query_set = []
+
+    for asked in asked_set:
+        query = []
+        qstring = readFromPickle(QUERY_DIR, asked.q_filename)
+        qstring = qstring[:30] + '...'
+
+        query.append(asked.q_id)
+        query.append(qstring)
+
+        query_set.append(query)
+
     context = {
         'username': username,
+        'query_set': query_set,
     }
 
-    return render(request, "", context)
+    return render(request, "questionsbase.html", context)
 
 
 # ADD TOPICS OF INTEREST
@@ -325,14 +358,29 @@ def addfriend(request, receiver):
     if form.is_valid():
         intimacy = form.cleaned_data.get('intimacy')
 
-        friendship = FriendStatus(req_receiver=receiver, req_sender=username, status="PENDING")
+        friendship = FriendStatus(req_receiver=getUserObject(receiver), req_sender=getUserObject(username),status="PENDING")
         friendship.save()
 
-        friendvalue = FriendValue(friendship_no=friendship, value_by_user=getAllUsers(username), value=intimacy )
+        friendvalue = FriendValue(friendship_no=friendship, value_by_user=getUserObject(username), value=intimacy )
         friendvalue.save()
 
         return HttpResponseRedirect('/friendrequests')
 
     return render(request, "basefriend.html", context)
+
+
+def queries(request, id):
+
+    if not request.session.has_key('username'):
+        return HttpResponseRedirect('/')
+
+    username = request.session['username']
+
+    context = {
+        'username': username
+    }
+
+    return render(request, "base.html", context)
+
 
 # --> VIEWS END <--
