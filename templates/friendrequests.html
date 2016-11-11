@@ -55,14 +55,14 @@
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Username</th>
+                                            <th style="width:75%">Username</th>
                                             <th>Accept Request</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for request in friend_requests %}
                                         <tr>
-                                            <td>{{ request }}</td>
+                                            <td style="width:75%">{{ request }}</td>
                                             <td><a href='/acceptfriend/{{ request }} -->'><input type = 'submit' class="button special small" value = 'Accept' /></a></td>
                                         </tr>
                                         {% endfor %}
@@ -76,27 +76,33 @@
                     </section>
 
                     <section id="two">
+                    <div class="container">
                         <header class="major">
-                                <p>Want to add more friends?</p>
+                                <h3>Want to add more friends?</h3>
                         </header>
+                        {% if remaining_users %}
                         <div class="table-wrapper">
                                 <table>
                                     <thead>
                                         <tr>
-                                            <th>Username</th>
+                                            <th style="width:75%">Username</th>
                                             <th>Send Request</th>
                                         </tr>
                                     </thead>
                                     <tbody>
                                         {% for makefriend in remaining_users %}
                                         <tr>
-                                            <td>{{ makefriend }}</td>
+                                            <td style="width:75%">{{ makefriend }}</td>
                                             <td><a href='/addfriend/{{ makefriend }} -->'><input type = 'submit' class="button special small" value = 'Send Request' /></a></td>
                                         </tr>
                                         {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
+                        {% else %}
+                            <p>No new people to add.</p>
+                        {% endif %}
+                    </div>
                     </section>
 
                 </div>
